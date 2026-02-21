@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "npx tsx run-tests.ts",
+    "setup": "npx tsx setup.ts",
+    "teardown": "npx tsx teardown.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}
