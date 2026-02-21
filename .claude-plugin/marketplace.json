@@ -1,0 +1,25 @@
+{
+  "name": "claude-portainer-plugin",
+  "owner": {
+    "name": "hangox"
+  },
+  "plugins": [
+    {
+      "name": "portainer",
+      "source": "./",
+      "description": "Portainer CE container management plugin for Claude Code. Manage Docker containers, stacks, images, networks, and volumes through Portainer REST API.",
+      "version": "1.0.0",
+      "author": {
+        "name": "hangox"
+      },
+      "license": "MIT",
+      "keywords": [
+        "portainer",
+        "docker",
+        "container",
+        "devops",
+        "infrastructure"
+      ]
+    }
+  ]
+}
