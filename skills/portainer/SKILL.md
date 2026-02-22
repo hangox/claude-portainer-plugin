@@ -11,19 +11,64 @@ description: Portainer CE 容器管理专家，通过 REST API 管理 Docker 容
 - 已验证版本：2.33.7
 - 版本探测：先调 `GET $PORTAINER_URL/api/system/status`，若 404 则回退 `GET $PORTAINER_URL/api/status`
 
-## 环境变量规范
+## 环境变量规范（临时覆盖）
 
-| 变量名 | 必需 | 说明 | 示例 |
-|--------|------|------|------|
-| `PORTAINER_URL` | 是 | Portainer 地址（不含 `/api`） | `https://portainer.example.com` |
-| `PORTAINER_API_KEY` | 推荐 | API Key（`ptr_` 开头） | `ptr_abc123...` |
-| `PORTAINER_ENDPOINT_ID` | 否 | 环境 ID，默认 `1` | `2` |
-| `PORTAINER_USERNAME` | 否 | JWT 回退用户名 | `admin` |
-| `PORTAINER_PASSWORD` | 否 | JWT 回退密码 | - |
+| 变量名 | 说明 | 示例 |
+|--------|------|------|
+| `PORTAINER_URL` | Portainer 地址（不含 `/api`），覆盖全局配置 | `https://portainer.example.com` |
+| `PORTAINER_API_KEY` | API Key，覆盖全局配置 | `ptr_abc123...` |
+| `PORTAINER_ENDPOINT_ID` | 环境 ID，覆盖全局配置，默认 `1` | `2` |
+| `PORTAINER_USERNAME` | JWT 回退用户名 | `admin` |
+| `PORTAINER_PASSWORD` | JWT 回退密码 | - |
 
 **curl 简写约定：**
 - `$AUTH` → `-H "X-API-Key: $PORTAINER_API_KEY"` 或 `-H "Authorization: Bearer $TOKEN"`
 - `$EP` → `$PORTAINER_URL/api/endpoints/$PORTAINER_ENDPOINT_ID`（Docker 代理前缀）
+
+## 全局配置文件（推荐）
+
+配置文件路径：`~/.config/portainer-skill/hosts.json`
+
+```json
+{
+  "current": "https://prod.example.com",
+  "hosts": {
+    "https://prod.example.com": {
+      "name": "production",
+      "apiKey": "ptr_abc123...",
+      "endpointId": 1
+    },
+    "https://test.example.com": {
+      "name": "staging",
+      "apiKey": "ptr_def456...",
+      "endpointId": 2
+    }
+  }
+}
+```
+
+**配置管理操作（用自然语言触发）：**
+
+| 用户说 | skill 行为 |
+|--------|-----------|
+| "portainer 配置状态" / "portainer auth status" | 读取并展示所有 host，标注当前 active，API Key 脱敏显示 |
+| "添加 portainer https://x.com" | 交互询问 name/API Key/endpointId，写入 hosts.json |
+| "切换到 staging portainer" | 按 name 或 URL 匹配，更新 `current` 字段 |
+| "删除 portainer host https://x.com" | 从 hosts 中移除，若为 current 则清空 current |
+| "更新 portainer API Key" | 更新当前 host 的 apiKey 字段 |
+
+**配置状态展示格式（类似 gh auth status）：**
+```
+Portainer Hosts
+---------------
+✓ production  https://prod.example.com  [current]
+  API Key: ptr_abc1...
+  Endpoint ID: 1
+
+  staging  https://test.example.com
+  API Key: ptr_def4...
+  Endpoint ID: 2
+```
 
 ## 配置发现流程
 
@@ -31,18 +76,23 @@ description: Portainer CE 容器管理专家，通过 REST API 管理 Docker 容
 
 ```
 1. 检查环境变量 PORTAINER_URL / PORTAINER_API_KEY
-   ├─ 有 → 直接使用
+   ├─ 有 → 直接使用（临时覆盖，不修改全局配置）
    └─ 无 → 继续
-2. 解析当前项目 CLAUDE.md 中的 Portainer 段落
+2. 读取全局配置文件 ~/.config/portainer-skill/hosts.json
+   ├─ 有 current → 使用对应 host 配置
+   ├─ 有多个 host 但无 current → 列出供用户选择
+   └─ 文件不存在/为空 → 继续
+3. 解析当前项目 CLAUDE.md 中的 Portainer 段落（向后兼容）
    ├─ 找到 → 提取 URL、Endpoint ID、认证信息
    └─ 未找到 → 继续
-3. 交互式询问用户
+4. 交互式询问用户
    ├─ 询问 Portainer URL
    ├─ 询问认证方式（API Key / 用户名密码）
-   └─ 若无 Endpoint ID → 调用 GET /api/endpoints 列出可用环境供选择
+   ├─ 若无 Endpoint ID → 调用 GET /api/endpoints 列出可用环境供选择
+   └─ 询问是否保存到全局配置文件
 ```
 
-**CLAUDE.md 解析规则：**
+**CLAUDE.md 解析规则（兼容旧格式）：**
 - 搜索 `Portainer` 相关段落，提取 URL（`管理地址`/`Portainer URL`）
 - 提取 `Portainer ID`/`Endpoint ID` 作为 `PORTAINER_ENDPOINT_ID`
 - 若包含用户名密码，用于 JWT 认证回退
