@@ -2,8 +2,20 @@
 
 > 本文档提供 Portainer Skill 的典型操作工作流，包含完整的 curl 命令序列和决策逻辑。
 
+## 目录
+
+1. [Stack 完整部署工作流](#1-stack-完整部署工作流)
+2. [Stack 更新工作流](#2-stack-更新工作流)
+3. [容器日志排查工作流](#3-容器日志排查工作流)
+4. [批量镜像清理工作流](#4-批量镜像清理工作流)
+5. [CI/CD Webhook 集成工作流](#5-cicd-webhook-集成工作流)
+6. [多环境管理工作流](#6-多环境管理工作流)
+7. [最佳实践](#7-最佳实践)
+
+---
+
 **变量约定：**
-- `$PORTAINER_URL` — Portainer 地址（如 `https://portainer2.hangox.com`）
+- `$PORTAINER_URL` — Portainer 地址（如 `https://portainer.example.com`）
 - `$AUTH` — 认证头（`-H "X-API-Key: $PORTAINER_API_KEY"` 或 `-H "Authorization: Bearer $TOKEN"`）
 - `$PORTAINER_ENDPOINT_ID` — 目标环境 ID
 - `$EP` — Docker 代理前缀，即 `$PORTAINER_URL/api/endpoints/$PORTAINER_ENDPOINT_ID`
@@ -421,7 +433,7 @@ Webhook URL 格式:
 $PORTAINER_URL/api/stacks/webhooks/{Token}
 
 示例:
-https://portainer2.hangox.com/api/stacks/webhooks/c50cddad-77c5-4fde-9f68-a390a5c8a2e3
+https://portainer.example.com/api/stacks/webhooks/c50cddad-77c5-4fde-9f68-a390a5c8a2e3
 ```
 
 **步骤 4：CI/CD 集成示例**

@@ -348,8 +348,8 @@ curl -s -X POST "$PORTAINER_URL/api/stacks/webhooks/{webhookID}"
 
 ## 参考文档
 
-如需更详细的信息，请读取以下参考文件：
-- 完整 API 端点列表 → `references/api-reference.md`
-- Docker 代理 API 详情 → `references/docker-proxy-api.md`
-- 工作流示例和最佳实践 → `references/workflow-examples.md`
-- 验收测试清单 → `references/acceptance-checklist.md`
+按需加载，不要预先全部读入：
+
+- 需要查询具体 API 端点格式、参数或返回值时 → `references/api-reference.md`
+- 遇到 Docker 代理 API 问题（容器/镜像/网络/卷操作）时 → `references/docker-proxy-api.md`
+- 需要完整操作流程示例（部署/更新/日志排查/Webhook 集成等）时 → `references/workflow-examples.md`
