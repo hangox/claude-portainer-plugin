@@ -21,8 +21,35 @@ Claude Code 插件，通过 Portainer REST API 管理 Docker 容器和服务。
 
 ## 安装
 
+### 方式一：plugin 命令（推荐）
+
+在 Claude Code 中运行：
+
+```
+/plugin install portainer@hangox
+```
+
+或通过 CLI：
+
 ```bash
-# 克隆到 Claude Code 插件目录
+claude plugin install portainer@hangox
+```
+
+### 方式二：npx skills-installer（跨客户端通用）
+
+适用于 Cursor、Windsurf 等多种 AI 编程工具：
+
+```bash
+# 安装到当前项目（推荐）
+npx skills-installer install @hangox/claude-portainer-plugin/portainer -p --client claude-code
+
+# 全局安装（所有项目可用）
+npx skills-installer install @hangox/claude-portainer-plugin/portainer --client claude-code
+```
+
+### 方式三：手动克隆
+
+```bash
 git clone https://github.com/hangox/claude-portainer-plugin.git ~/.claude/plugins/claude-portainer-plugin
 ```
 
